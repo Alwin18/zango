@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Alwin18/zango/internal/config"
+	"github.com/Alwin18/zango/internal/gui"
 	"github.com/Alwin18/zango/internal/server"
 )
 
@@ -14,11 +15,15 @@ func main() {
 	}
 
 	// server
-	err = server.Start(server.ServerConfig{
-		Host: cfg.Server.Host,
-		Port: cfg.Server.Port,
-	})
-	if err != nil {
-		log.Fatalf("Gagal start server: %v", err)
-	}
+	go func() {
+		err := server.Start(server.ServerConfig{
+			Host: cfg.Server.Host,
+			Port: cfg.Server.Port,
+		})
+		if err != nil {
+			log.Println("Server error:", err)
+		}
+	}()
+
+	gui.Start()
 }

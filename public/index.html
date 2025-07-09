@@ -1,11 +1,94 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Zanggo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zango Control Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    .service-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .label {
+      width: 100px;
+    }
+    .status {
+      font-weight: bold;
+      width: 100px;
+    }
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Berhasil serve static file dari Go!</h1>
+  <h1>Zango Control Panel</h1>
+  <hr />
+
+  <div class="service-row">
+    <div class="label">HTTP</div>
+    <div class="status" id="http-status">Loading...</div>
+    <button onclick="startService('http')">Start</button>
+    <button onclick="stopService('http')">Stop</button>
+  </div>
+
+  <div class="service-row">
+    <div class="label">Database</div>
+    <div class="status" id="db-status">Loading...</div>
+    <button onclick="startService('db')">Start</button>
+    <button onclick="stopService('db')">Stop</button>
+  </div>
+
+  <div class="service-row">
+    <div class="label">Apache</div>
+    <div class="status" id="apache-status">Loading...</div>
+    <button onclick="startService('apache')">Start</button>
+    <button onclick="stopService('apache')">Stop</button>
+  </div>
+
+  <script>
+    async function fetchStatus(name) {
+      try {
+        const res = await fetch(`/api/service/status?name=${name}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        document.getElementById(`${name}-status`).textContent = data.active ? "Active" : "Inactive";
+      } catch {
+        document.getElementById(`${name}-status`).textContent = "Error";
+      }
+    }
+
+    async function startService(name) {
+      try {
+        await fetch(`/api/service/start?name=${name}`);
+        fetchStatus(name);
+      } catch {
+        alert("Failed to start " + name);
+      }
+    }
+
+    async function stopService(name) {
+      try {
+        await fetch(`/api/service/stop?name=${name}`);
+        fetchStatus(name);
+      } catch {
+        alert("Failed to stop " + name);
+      }
+    }
+
+    // Initial status check
+    ["http", "db", "apache"].forEach(fetchStatus);
+  </script>
 </body>
 </html>
