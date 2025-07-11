@@ -2,7 +2,10 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"sync"
+
+	"github.com/Alwin18/zango/internal/storage"
 )
 
 type Service struct {
@@ -32,6 +35,9 @@ func Start(name string) error {
 	}
 
 	svc.Active = true
+	if err := storage.InsertServiceLog(name, "start"); err != nil {
+		log.Println("Gagal simpan log:", err)
+	}
 	return nil
 }
 
@@ -49,6 +55,9 @@ func Stop(name string) error {
 	}
 
 	svc.Active = false
+	if err := storage.InsertServiceLog(name, "stop"); err != nil {
+		log.Println("Gagal simpan log:", err)
+	}
 	return nil
 }
 

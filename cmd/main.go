@@ -6,12 +6,18 @@ import (
 	"github.com/Alwin18/zango/internal/config"
 	"github.com/Alwin18/zango/internal/gui"
 	"github.com/Alwin18/zango/internal/server"
+	"github.com/Alwin18/zango/internal/storage"
 )
 
 func main() {
 	cfg, err := config.Load("config/config.yaml")
 	if err != nil {
 		log.Fatalf("Gagal load config: %v", err)
+	}
+
+	// init Db
+	if err := storage.InitDB("internal/storage/zango.db"); err != nil {
+		log.Fatalf("Gagal init DB: %v", err)
 	}
 
 	// server
